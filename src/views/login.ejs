@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Document</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Full-width input fields */
+        input[type=text],
+        input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        /* Set a style for all buttons */
+        .container button {
+            background-color: #04AA6D;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        /* Extra styles for the cancel button */
+        .cancelbtn {
+            width: auto;
+            padding: 10px 18px;
+            background-color: #f44336;
+        }
+
+        /* Center the image and position the close button */
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+            position: relative;
+        }
+
+        img.avatar {
+            width: 40%;
+            border-radius: 50%;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        span.psw {
+            float: right;
+            padding-top: 16px;
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+            padding-top: 60px;
+        }
+
+        .container-social {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .container-social img {
+            color: rgb(247, 10, 10);
+            width: 40px;
+            height: 40px;
+            margin-top: 10px;
+        }
+
+        /* Modal Content/Box */
+        .container {
+            background-color: #fefefe;
+            margin: 10% auto 15% auto;
+            /* 5% from the top, 15% from the bottom and centered */
+            border: 1px solid #888;
+            width: 40%;
+            /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button (x) */
+        .close {
+            position: absolute;
+            right: 25px;
+            top: 0;
+            color: #000;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: red;
+            cursor: pointer;
+        }
+
+        /* Add Zoom Animation */
+        .animate {
+            -webkit-animation: animatezoom 0.6s;
+            animation: animatezoom 0.6s
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $("#btnLogin").on("click", function () {
+                const username = $('#username').val();
+                const password = $('#password').val();
+                const serviceURL = $('#redirectURL').val();
+                $.ajax({
+                    type: "POST",
+                    url: `${window.location.origin}/login`,
+                    data: { username, password, serviceURL },
+                    withCredentials: true,
+                    success: function (data) {
+                        console.log(data.redirectURL);
+                        const redirectURL = `${data.redirectURL}/code?ssoToken=${data.code}`;
+                        window.location.href = redirectURL;
+                    },
+                    error: function (request, status, error) {
+                        console.log(error);
+                    }
+                })
+            });
+
+            $("#iconGoogle").on("click", function () {
+                localStorage.removeItem("clientURL");
+                localStorage.setItem("clientURL", $('#redirectURL').val());
+                window.location.href = "/auth/google";
+            });
+
+            $("#iconFacebook").on("click", function () {
+                localStorage.removeItem("clientURL");
+                localStorage.setItem("clientURL", $('#redirectURL').val());
+                window.location.href = "/auth/facebook";
+            });
+        })
+    </script>
+</head>
+
+<body>
+    <input value="<%=redirectURL%>" hidden id="redirectURL" />
+    <div class="container">
+        <form action="">
+            <label><b>Username</b></label>
+            <input id="username" type="text" placeholder="Enter Username" name="username" required>
+
+            <label><b>Password</b></label>
+            <input id="password" type="password" placeholder="Enter Password" name="password" autocomplete="on"
+                required>
+
+            <button type="button" id="btnLogin">Login</button>
+            <label>
+                <input type="checkbox" checked="checked" name="remember"> Remember me
+            </label>
+        </form>
+        <div class="container-social" style="background-color:#f1f1f1">
+            Or Login with
+            <div>
+                <img id="iconGoogle" src="/images/icons8-google-48.png" alt="google">
+                <img id="iconFacebook" src="/images/icons8-facebook-48.png" alt="facebook">
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
